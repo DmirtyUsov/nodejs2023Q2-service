@@ -8,13 +8,16 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone git@github.com:DmirtyUsov/nodejs2023Q2-service.git
+git checkout develop
 ```
 
-## Installing NPM modules
+## Installing and updating NPM modules
 
 ```
 npm install
+npm audit fix
+npm update
 ```
 
 ## Running application
