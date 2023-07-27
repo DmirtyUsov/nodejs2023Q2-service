@@ -3,5 +3,5 @@ import { UserDB } from './user.db';
 
 @Injectable()
 export class MydbService {
-  user  = new UserDB();
+  user = new UserDB();
 }

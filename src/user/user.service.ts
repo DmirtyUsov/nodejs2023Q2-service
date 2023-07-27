@@ -13,15 +13,14 @@ export class UserService {
   getSingleUserById() {}
 
   createUser(dto: CreateUserDto) {
-    const newUser:UserDto = {
-        id: uuid.v4(),
-        login: dto.login,
-        password: dto.password,
-        version: 0,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-
-    }
+    const newUser: UserDto = {
+      id: uuid.v4(),
+      login: dto.login,
+      password: dto.password,
+      version: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
     // generate the password hash
 
     // save user to db

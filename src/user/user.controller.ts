@@ -1,4 +1,10 @@
-import { Body, Controller, ForbiddenException, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Post,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UserDto } from './dto';
 
@@ -7,17 +13,16 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  getAllUsers() {
+  getAllUsers(): UserDto[] {
     return this.userService.getAllUsers();
   }
 
   @Post()
   createUser(@Body() dto: CreateUserDto) {
     const result = this.userService.createUser(dto);
-    if(!result) {
+    if (!result) {
       throw new ForbiddenException('User exists');
-    }
-    else{
+    } else {
       return result;
     }
   }
