@@ -4,6 +4,6 @@ import { MydbService } from './mydb.service';
 @Global()
 @Module({
   providers: [MydbService],
-  exports: [MydbService]
+  exports: [MydbService],
 })
 export class MydbModule {}

@@ -1,20 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { MydbService } from "src/mydb/mydb.service";
+import { Injectable } from '@nestjs/common';
+import { MydbService } from 'src/mydb/mydb.service';
 
 @Injectable()
 export class UserService {
-    constructor(private mydb:MydbService){}
-    
-    getAllUsers() {
-        return {msg: 'GetAll'};
-    }
-    getSingleUserById() {}
+  constructor(private mydb: MydbService) {}
 
-    createUser() {
-        return {msg: 'new User'}
-    }
+  getAllUsers() {
+    return { msg: 'GetAll' };
+  }
+  getSingleUserById() {}
 
-    updateUserPassword() {}
+  createUser() {
+    return { msg: 'new User' };
+  }
 
-    deleteUser() {}
+  updateUserPassword() {}
+
+  deleteUser() {}
 }
