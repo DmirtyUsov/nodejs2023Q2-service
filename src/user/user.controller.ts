@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UserDto } from './dto';
 
@@ -13,7 +13,12 @@ export class UserController {
 
   @Post()
   createUser(@Body() dto: CreateUserDto) {
-    console.log({ dto });
-    return this.userService.createUser();
+    const result = this.userService.createUser(dto);
+    if(!result) {
+      throw new ForbiddenException('User exists');
+    }
+    else{
+      return result;
+    }
   }
 }
