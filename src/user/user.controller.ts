@@ -39,6 +39,7 @@ export class UserController {
     if (!result) {
       throw new ForbiddenException('User exists');
     } else {
+      delete result.password; // TODO
       return result;
     }
   }
