@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MydbService } from 'src/mydb/mydb.service';
 import { CreateUserDto, UserDto } from './dto';
 import * as uuid from 'uuid';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -10,21 +11,23 @@ export class UserService {
   getAllUsers() {
     return this.mydb.user.list();
   }
-  getSingleUserById() {}
+  getSingleUserById(id: string) {
+    return this.mydb.user.getById(id);
+  }
 
   createUser(dto: CreateUserDto) {
     const newUser: UserDto = {
       id: uuid.v4(),
       login: dto.login,
-      password: dto.password,
+      password: '',
       version: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
+    newUser.password = dto.password;
     // generate the password hash
-
+    
     // save user to db
-
     // return saved user
     return this.mydb.user.create(newUser);
   }

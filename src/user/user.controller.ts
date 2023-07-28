@@ -3,6 +3,9 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  NotFoundException,
+  Param,
+  ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -15,6 +18,16 @@ export class UserController {
   @Get()
   getAllUsers(): UserDto[] {
     return this.userService.getAllUsers();
+  }
+
+  @Get(':id')
+  getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string) : UserDto {
+    const result = this.userService.getSingleUserById(id);
+    if (!result) {
+      throw new NotFoundException('User doesn not exist');
+    } else {
+      return result;
+    }
   }
 
   @Post()
