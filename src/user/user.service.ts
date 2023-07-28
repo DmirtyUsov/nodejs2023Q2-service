@@ -20,7 +20,7 @@ export class UserService {
       id: uuid.v4(),
       login: dto.login,
       password: '',
-      version: 0,
+      version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
