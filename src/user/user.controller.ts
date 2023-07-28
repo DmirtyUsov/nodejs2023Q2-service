@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   ForbiddenException,
@@ -11,6 +12,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
@@ -19,11 +21,13 @@ import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getAllUsers(): UserDto[] {
     return this.userService.getAllUsers();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string): UserDto {
     const result = this.userService.getSingleUserById(id);
@@ -33,14 +37,13 @@ export class UserController {
       return result;
     }
   }
-
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   createUser(@Body() dto: CreateUserDto) {
     const result = this.userService.createUser(dto);
     if (!result) {
       throw new ForbiddenException('User exists');
     } else {
-      delete result.password; // TODO
       return result;
     }
   }
