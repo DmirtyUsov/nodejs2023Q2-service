@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MydbService } from 'src/mydb/mydb.service';
-import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
+import { CreateUserDto, UserDto } from './dto';
 import * as uuid from 'uuid';
 import bcrypt from 'bcrypt';
 
@@ -26,7 +26,7 @@ export class UserService {
     };
     newUser.password = dto.password;
     // generate the password hash
-    
+
     // save user to db
     // return saved user
     return this.mydb.user.create(newUser);

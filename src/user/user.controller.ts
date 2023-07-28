@@ -24,7 +24,7 @@ export class UserController {
   }
 
   @Get(':id')
-  getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string) : UserDto {
+  getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string): UserDto {
     const result = this.userService.getSingleUserById(id);
     if (!result) {
       throw new NotFoundException('User doesn not exist');
@@ -45,7 +45,7 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) : UserDto {
+  deleteUser(@Param('id', new ParseUUIDPipe()) id: string): UserDto {
     const result = this.userService.deleteUser(id);
     if (!result) {
       throw new NotFoundException('User doesn not exist');
@@ -57,23 +57,22 @@ export class UserController {
   @Put(':id')
   updateUserPassword(
     @Body() dto: UpdatePasswordDto,
-    @Param('id', new ParseUUIDPipe()) id: string
-    ) : UserDto {
-      
-      //find user
-      const result = this.userService.getSingleUserById(id);
-      if (!result) {
-        throw new NotFoundException('User does not exist');
-      } else {
-        // check password
-        if(dto.oldPassword !== result.password) {
-          throw new ForbiddenException('oldPassword is wrong');
-        }
-        // update password
-        result.password = dto.newPassword;
-        result.updatedAt = Date.now();
-        result.version += 1;
-        return this.userService.updateUser(result);
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): UserDto {
+    //find user
+    const result = this.userService.getSingleUserById(id);
+    if (!result) {
+      throw new NotFoundException('User does not exist');
+    } else {
+      // check password
+      if (dto.oldPassword !== result.password) {
+        throw new ForbiddenException('oldPassword is wrong');
+      }
+      // update password
+      result.password = dto.newPassword;
+      result.updatedAt = Date.now();
+      result.version += 1;
+      return this.userService.updateUser(result);
     }
   }
 }
