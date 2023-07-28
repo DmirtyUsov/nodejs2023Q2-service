@@ -34,5 +34,7 @@ export class UserService {
 
   updateUserPassword() {}
 
-  deleteUser() {}
+  deleteUser(id: string) {
+    return this.mydb.user.delete(id);
+  }
 }

@@ -36,4 +36,12 @@ export class UserDB {
     return result;
   }
 
+  delete(id: string): UserDto {
+    const result = this.getById(id);
+    if (result) {
+      delete this.users[result.id];
+    }
+    return result;
+  }
+  
 }

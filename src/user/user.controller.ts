@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -35,6 +37,17 @@ export class UserController {
     const result = this.userService.createUser(dto);
     if (!result) {
       throw new ForbiddenException('User exists');
+    } else {
+      return result;
+    }
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) : UserDto {
+    const result = this.userService.deleteUser(id);
+    if (!result) {
+      throw new NotFoundException('User doesn not exist');
     } else {
       return result;
     }
