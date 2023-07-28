@@ -33,7 +33,7 @@ export class UserService {
   }
 
   updateUser(dto: UserDto): UserDto {
-    const result = this.mydb.user.update(dto);
+    const result = this.mydb.user.update(dto.id, dto);
     return result;
   }
 
