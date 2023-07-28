@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MydbService } from 'src/mydb/mydb.service';
-import { CreateUserDto, UserDto } from './dto';
+import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 import * as uuid from 'uuid';
 import bcrypt from 'bcrypt';
 
@@ -32,7 +32,10 @@ export class UserService {
     return this.mydb.user.create(newUser);
   }
 
-  updateUserPassword() {}
+  updateUser(dto: UserDto): UserDto {
+    const result = this.mydb.user.update(dto);
+    return result;
+  }
 
   deleteUser(id: string) {
     return this.mydb.user.delete(id);

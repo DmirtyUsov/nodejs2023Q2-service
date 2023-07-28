@@ -43,5 +43,11 @@ export class UserDB {
     }
     return result;
   }
-  
+  update(dto: UserDto): UserDto {
+    const result = this.getById(dto.id);
+    if (result) {
+      this.users[result.id] = dto;
+    }
+    return result;
+  }
 }

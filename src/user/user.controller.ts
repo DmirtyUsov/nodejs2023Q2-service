@@ -9,9 +9,10 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UserDto } from './dto';
+import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 
 @Controller('user')
 export class UserController {
@@ -50,6 +51,29 @@ export class UserController {
       throw new NotFoundException('User doesn not exist');
     } else {
       return result;
+    }
+  }
+
+  @Put(':id')
+  updateUserPassword(
+    @Body() dto: UpdatePasswordDto,
+    @Param('id', new ParseUUIDPipe()) id: string
+    ) : UserDto {
+      
+      //find user
+      const result = this.userService.getSingleUserById(id);
+      if (!result) {
+        throw new NotFoundException('User does not exist');
+      } else {
+        // check password
+        if(dto.oldPassword !== result.password) {
+          throw new ForbiddenException('oldPassword is wrong');
+        }
+        // update password
+        result.password = dto.newPassword;
+        result.updatedAt = Date.now();
+        result.version += 1;
+        return this.userService.updateUser(result);
     }
   }
 }
