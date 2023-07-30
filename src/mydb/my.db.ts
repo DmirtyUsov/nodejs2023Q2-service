@@ -1,39 +1,37 @@
-
 export class MyDB<T> {
-    private db: { [id: string]: T };
-  
-    constructor() {
-      this.db = {};
-    }
+  private db: { [id: string]: T };
 
-    list(): T[] {
-        return Object.values(this.db);
-    }
+  constructor() {
+    this.db = {};
+  }
 
-    getById(id: string): T {
-        const result: T = this.db[id];
-        return result;
-    }
+  list(): T[] {
+    return Object.values(this.db);
+  }
 
-    add(id:string, dto: T): T {
-        this.db[id] = dto;
-        return dto;
-    }
+  getById(id: string): T {
+    const result: T = this.db[id];
+    return result;
+  }
 
-    delete(id: string): T {
-        const result = this.getById(id);
-        if (result) {
-          delete this.db[id];
-        }
-        return result;
-    }
+  add(id: string, dto: T): T {
+    this.db[id] = dto;
+    return dto;
+  }
 
-    update(id: string, dto: T): T {
-        const result = this.getById(id);
-        if (result) {
-          this.db[id] = dto;
-        }
-        return result;
+  delete(id: string): T {
+    const result = this.getById(id);
+    if (result) {
+      delete this.db[id];
     }
+    return result;
+  }
 
+  update(id: string, dto: T): T {
+    const result = this.getById(id);
+    if (result) {
+      this.db[id] = dto;
+    }
+    return result;
+  }
 }

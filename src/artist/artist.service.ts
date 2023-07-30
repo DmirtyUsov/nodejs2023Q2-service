@@ -5,15 +5,15 @@ import * as uuid from 'uuid';
 
 @Injectable()
 export class ArtistService {
-    constructor(private mydb: MydbService) {}
+  constructor(private mydb: MydbService) {}
 
   getAllArtists() {
     return this.mydb.artist.list();
   }
   getSingleArtistById(id: string) {
     const result = this.mydb.artist.getById(id);
-    if(!result) {
-        throw new NotFoundException('User doesn not exist');
+    if (!result) {
+      throw new NotFoundException('User doesn not exist');
     }
     return result;
   }
@@ -40,8 +40,8 @@ export class ArtistService {
 
   deleteArtist(id: string) {
     const result = this.mydb.artist.delete(id);
-    if(!result) {
-        throw new NotFoundException('User doesn not exist');
+    if (!result) {
+      throw new NotFoundException('User doesn not exist');
     }
     return result;
   }
