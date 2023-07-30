@@ -1,8 +1,11 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MydbService } from 'src/mydb/mydb.service';
 import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 import * as uuid from 'uuid';
-import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -22,14 +25,12 @@ export class UserService {
   }
 
   createUser(dto: CreateUserDto) {
-    const newUser: UserDto = {
-      id: uuid.v4(),
-      login: dto.login,
-      password: '',
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+    const newUser = new UserDto();
+    newUser.id = uuid.v4();
+    newUser.login = dto.login;
+    newUser.version = 1;
+    newUser.createdAt = Date.now();
+    newUser.updatedAt = Date.now();
     newUser.password = dto.password;
     // generate the password hash
 

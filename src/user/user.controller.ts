@@ -43,6 +43,7 @@ export class UserController {
     this.userService.deleteUser(id);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
   updateUserPassword(
     @Body() dto: UpdatePasswordDto,
