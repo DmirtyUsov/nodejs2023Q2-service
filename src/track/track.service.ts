@@ -49,6 +49,7 @@ export class TrackService {
     if (!result) {
       throw new NotFoundException(this.MSG_NOTFOUND);
     }
+    this.mydb.cleanTrack(id);
     return result;
   }
 }

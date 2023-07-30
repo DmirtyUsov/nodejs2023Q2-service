@@ -43,6 +43,7 @@ export class ArtistService {
     if (!result) {
       throw new NotFoundException('User doesn not exist');
     }
+    this.mydb.cleanArtist(id);
     return result;
   }
 }

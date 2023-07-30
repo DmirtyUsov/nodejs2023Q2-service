@@ -47,6 +47,7 @@ export class AlbumService {
     if (!result) {
       throw new NotFoundException(this.MSG_NOTFOUND);
     }
+    this.mydb.cleanAlbum(id);
     return result;
   }
 }
