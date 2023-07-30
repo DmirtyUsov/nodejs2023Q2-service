@@ -23,7 +23,7 @@ export class ArtistController {
   }
 
   @Get(':id')
-  getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string): ArtistDto {
+  getSingleArtistById(@Param('id', new ParseUUIDPipe()) id: string): ArtistDto {
     return this.artistService.getSingleArtistById(id);
   }
 
