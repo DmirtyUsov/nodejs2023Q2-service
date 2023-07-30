@@ -3,11 +3,9 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -30,33 +28,19 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   getSingleUserById(@Param('id', new ParseUUIDPipe()) id: string): UserDto {
-    const result = this.userService.getSingleUserById(id);
-    if (!result) {
-      throw new NotFoundException('User doesn not exist');
-    } else {
-      return result;
-    }
+    return this.userService.getSingleUserById(id);
   }
+
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   createUser(@Body() dto: CreateUserDto) {
-    const result = this.userService.createUser(dto);
-    if (!result) {
-      throw new ForbiddenException('User exists');
-    } else {
-      return result;
-    }
+    return this.userService.createUser(dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string): UserDto {
-    const result = this.userService.deleteUser(id);
-    if (!result) {
-      throw new NotFoundException('User doesn not exist');
-    } else {
-      return result;
-    }
+  deleteUser(@Param('id', new ParseUUIDPipe()) id: string): void {
+    this.userService.deleteUser(id);
   }
 
   @Put(':id')
@@ -64,20 +48,6 @@ export class UserController {
     @Body() dto: UpdatePasswordDto,
     @Param('id', new ParseUUIDPipe()) id: string,
   ): UserDto {
-    //find user
-    const result = this.userService.getSingleUserById(id);
-    if (!result) {
-      throw new NotFoundException('User does not exist');
-    } else {
-      // check password
-      if (dto.oldPassword !== result.password) {
-        throw new ForbiddenException('oldPassword is wrong');
-      }
-      // update password
-      result.password = dto.newPassword;
-      result.updatedAt = Date.now();
-      result.version += 1;
-      return this.userService.updateUser(result);
-    }
+    return this.userService.updateUser(id, dto);
   }
 }

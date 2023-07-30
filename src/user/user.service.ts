@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { MydbService } from 'src/mydb/mydb.service';
-import { CreateUserDto, UserDto } from './dto';
+import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 import * as uuid from 'uuid';
 import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  private MSG_NOTFOUND = 'User does not exist';
   constructor(private mydb: MydbService) {}
 
   getAllUsers() {
     return this.mydb.user.list();
   }
+
   getSingleUserById(id: string) {
-    return this.mydb.user.getById(id);
+    const result = this.mydb.user.getById(id);
+    if (!result) {
+      throw new NotFoundException(this.MSG_NOTFOUND);
+    }
+    return result;
   }
 
   createUser(dto: CreateUserDto) {
@@ -29,15 +35,38 @@ export class UserService {
 
     // save user to db
     // return saved user
-    return this.mydb.user.create(newUser);
+    const result = this.mydb.user.create(newUser);
+    if (!result) {
+      throw new ForbiddenException('User exists');
+    } else {
+      return result;
+    }
   }
 
-  updateUser(dto: UserDto): UserDto {
-    const result = this.mydb.user.update(dto.id, dto);
+  updateUser(id: string, dto: UpdatePasswordDto): UserDto {
+    const result = this.mydb.user.getById(id);
+    if (!result) {
+      throw new NotFoundException(this.MSG_NOTFOUND);
+    } else {
+      // check password
+      if (dto.oldPassword !== result.password) {
+        throw new ForbiddenException('oldPassword is wrong');
+      }
+      // update password
+      result.password = dto.newPassword;
+      result.updatedAt = Date.now();
+      result.version += 1;
+      // const result = this.mydb.user.update(dto.id, dto);
+    }
     return result;
   }
 
-  deleteUser(id: string) {
-    return this.mydb.user.delete(id);
+  deleteUser(id: string): UserDto {
+    const result = this.mydb.user.delete(id);
+    if (!result) {
+      throw new NotFoundException(this.MSG_NOTFOUND);
+    } else {
+      return result;
+    }
   }
 }

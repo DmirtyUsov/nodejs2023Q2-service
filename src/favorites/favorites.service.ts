@@ -19,7 +19,6 @@ export class FavoritesService {
     };
 
     const artists = this.mydb.favs.list(FavRecords.artists);
-    console.log({ artists });
     artists.forEach((id) => {
       result.artists.push(this.mydb.artist.getById(id));
     });

@@ -3,9 +3,9 @@ import { MyDB } from './my.db';
 
 export class UserDB extends MyDB<UserDto> {
   create(dto: UserDto): UserDto {
-    if (this.findByLogin(dto.login)) {
-      return null;
-    }
+    // if (this.findByLogin(dto.login)) {
+    //   return null;
+    // }
     this.add(dto.id, dto);
     return dto;
   }

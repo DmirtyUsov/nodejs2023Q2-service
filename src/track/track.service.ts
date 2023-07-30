@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 @Injectable()
 export class TrackService {
-  private MSG_NOTFOUND = 'Track doesn not exist';
+  private MSG_NOTFOUND = 'Track does not exist';
   constructor(private mydb: MydbService) {}
 
   getAllTracks() {
