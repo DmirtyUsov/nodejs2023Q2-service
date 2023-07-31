@@ -10,6 +10,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   SwaggerModule.setup('doc', app, OpenApiData as OpenAPIObject);
-  await app.listen(app.get(ConfigService).get('PORT'));
+
+  const port = app.get(ConfigService).get('PORT') | 4000;
+
+  await app.listen(port);
 }
 bootstrap();
