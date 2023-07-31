@@ -5,19 +5,25 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+## Download
 
 ```
-git clone {repository URL}
+git clone git@github.com:DmirtyUsov/nodejs2023Q2-service.git
+git checkout develop
 ```
 
-## Installing NPM modules
+## Install NPM modules
 
 ```
 npm install
 ```
 
-## Running application
+## Rename '.env.example' file
+
+```
+mv .env.example .env
+```
+## Run application
 
 ```
 npm start
@@ -42,7 +48,7 @@ To run only one of all test suites
 ```
 npm run test -- <path to suite>
 ```
-
+## For future Parts
 To run all test with authorization
 
 ```

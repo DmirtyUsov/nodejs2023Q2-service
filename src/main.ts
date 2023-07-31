@@ -1,8 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { OpenApiData } from './config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(4000);
+  app.useGlobalPipes(new ValidationPipe());
+
+  SwaggerModule.setup('doc', app, OpenApiData as OpenAPIObject);
+
+  const port = app.get(ConfigService).get('PORT') | 4000;
+
+  await app.listen(port);
 }
 bootstrap();
