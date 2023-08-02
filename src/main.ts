@@ -11,7 +11,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('doc', app, OpenApiData as OpenAPIObject);
 
-  const port = app.get(ConfigService).get('PORT') | 4000;
+  const port = app.get(ConfigService).get('PORT') || 4000;
 
   await app.listen(port);
 }
