@@ -1,0 +1,24 @@
+name: hlservice-part2
+services:
+  hl-database:
+    image: hldatabase
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: hluser
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: hldb
+    networks:
+      - networkHl
+
+  hl-backend:
+    image: hlservice
+    ports:
+      - 4000:4000
+    volumes:
+      - ./:/app
+    depends_on:
+      - hl-database
+
+networks:
+  networkHl:
