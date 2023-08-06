@@ -6,6 +6,7 @@ import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FavoritesModule } from './favorites/favorites.module';
     AlbumModule,
     TrackModule,
     FavoritesModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
