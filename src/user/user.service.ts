@@ -6,6 +6,7 @@ import {
 import { CreateUserDto, UpdatePasswordDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaQueryError } from 'src/prisma/errorcodes';
 
 @Injectable()
 export class UserService {
@@ -73,9 +74,7 @@ export class UserService {
       return result;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code == 'P2025') {
-          // An operation failed because it depends on one or more records
-          // that were required but not found
+        if (error.code == PrismaQueryError.RecordsNotFound) {
           throw new NotFoundException(this.MSG_NOTFOUND);
         }
       }
