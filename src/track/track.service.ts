@@ -1,7 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MydbService } from 'src/mydb/mydb.service';
 import { CreateTrackDto, TrackDto } from './dto';
-import * as uuid from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaQueryError } from 'src/prisma/errorcodes';
@@ -9,7 +7,7 @@ import { PrismaQueryError } from 'src/prisma/errorcodes';
 @Injectable()
 export class TrackService {
   private MSG_NOTFOUND = 'Track does not exist';
-  constructor(private prisma: PrismaService, private mydb: MydbService) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllTracks(): Promise<TrackDto[]> {
     return await this.prisma.track.findMany();
