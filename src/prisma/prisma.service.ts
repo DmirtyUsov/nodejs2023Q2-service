@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
 // extension to transform fields type in results returned by Prisma queries
@@ -27,11 +28,11 @@ const createPrismaExtended = (prisma: PrismaClient) =>
 @Injectable()
 export class PrismaService extends PrismaClient {
   private _prisma: ReturnType<typeof createPrismaExtended>;
-  constructor() {
+  constructor(private config: ConfigService) {
     super({
       datasources: {
         db: {
-          url: 'postgresql://hluser:123@hl-database:5432/hldb?schema=public',
+          url: config.get('DATABASE_URL'),
         },
       },
     });
