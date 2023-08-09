@@ -3,22 +3,26 @@ services:
   hl-database:
     image: hldatabase
     ports:
-      - 5432:5432
+      - 5432:${DB_CONTAINER_PORT}
     environment:
-      POSTGRES_USER: hluser
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: hldb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    container_name: ${DB_CONTAINER_NAME}
     networks:
       - networkHl
 
   hl-backend:
     image: hlservice
     ports:
-      - 4000:4000
+      - 4000:${PORT}
+      - 5555:5555
     volumes:
       - ./:/app
     depends_on:
       - hl-database
+    networks:
+      - networkHl
 
 networks:
   networkHl:
