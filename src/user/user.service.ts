@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, UpdatePasswordDto } from './dto';
+import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaQueryError } from 'src/prisma/errorcodes';
@@ -13,11 +13,12 @@ export class UserService {
   private MSG_NOTFOUND = 'User does not exist';
   constructor(private prisma: PrismaService) {}
 
-  async getAllUsers() {
-    return await this.prisma.extended.user.findMany();
+  async getAllUsers(): Promise<UserDto[]> {
+    const users = await this.prisma.extended.user.findMany();
+    return users.map((item) => new UserDto(item)); // For @Exclude correct working
   }
 
-  async getSingleUserById(id: string) {
+  async getSingleUserById(id: string): Promise<UserDto> {
     const result = await this.prisma.extended.user.findUnique({
       where: { id: id },
     });
@@ -25,10 +26,10 @@ export class UserService {
     if (!result) {
       throw new NotFoundException(this.MSG_NOTFOUND);
     }
-    return result;
+    return new UserDto(result);
   }
 
-  async createUser(dto: CreateUserDto) {
+  async createUser(dto: CreateUserDto): Promise<UserDto> {
     // TODO generate the password hash
     const result = await this.prisma.extended.user.create({
       data: {
@@ -39,11 +40,11 @@ export class UserService {
     if (!result) {
       throw new ForbiddenException('User exists');
     } else {
-      return result;
+      return new UserDto(result);
     }
   }
 
-  async updateUser(id: string, dto: UpdatePasswordDto) {
+  async updateUser(id: string, dto: UpdatePasswordDto): Promise<UserDto> {
     let result = await this.prisma.extended.user.findUnique({
       where: { id: id },
     });
@@ -63,15 +64,15 @@ export class UserService {
         },
       });
     }
-    return result;
+    return new UserDto(result);
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string): Promise<UserDto> {
     try {
-      const result = await this.prisma.user.delete({
+      const result = await this.prisma.extended.user.delete({
         where: { id: id },
       });
-      return result;
+      return new UserDto(result);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code == PrismaQueryError.RecordsNotFound) {

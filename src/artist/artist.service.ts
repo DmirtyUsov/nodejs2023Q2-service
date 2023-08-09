@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateArtistDto } from './dto';
+import { ArtistDto, CreateArtistDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaQueryError } from 'src/prisma/errorcodes';
@@ -9,11 +9,11 @@ export class ArtistService {
   private MSG_NOTFOUND = 'Artist does not exist';
   constructor(private prisma: PrismaService) {}
 
-  async getAllArtists() {
+  async getAllArtists(): Promise<ArtistDto[]> {
     return await this.prisma.artist.findMany();
   }
 
-  async getSingleArtistById(id: string) {
+  async getSingleArtistById(id: string): Promise<ArtistDto> {
     const result = await this.prisma.artist.findUnique({
       where: { id: id },
     });
@@ -23,7 +23,7 @@ export class ArtistService {
     return result;
   }
 
-  async createArtist(dto: CreateArtistDto) {
+  async createArtist(dto: CreateArtistDto): Promise<ArtistDto> {
     return await this.prisma.artist.create({
       data: {
         name: dto.name,
@@ -32,7 +32,7 @@ export class ArtistService {
     });
   }
 
-  async updateArtistInfo(id: string, dto: CreateArtistDto) {
+  async updateArtistInfo(id: string, dto: CreateArtistDto): Promise<ArtistDto> {
     try {
       const result = await this.prisma.artist.update({
         where: { id: id },
@@ -52,7 +52,7 @@ export class ArtistService {
     }
   }
 
-  async deleteArtist(id: string) {
+  async deleteArtist(id: string): Promise<ArtistDto> {
     try {
       const result = await this.prisma.artist.delete({
         where: { id: id },

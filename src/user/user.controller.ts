@@ -21,22 +21,21 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getAllUsers() {
-    const users = await this.userService.getAllUsers();
-    return users.map((user) => new UserDto(user));
+  async getAllUsers(): Promise<UserDto[]> {
+    return await this.userService.getAllUsers();
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getSingleUserById(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ) {
-    return new UserDto(await this.userService.getSingleUserById(id));
+  ): Promise<UserDto> {
+    return await this.userService.getSingleUserById(id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async createUser(@Body() dto: CreateUserDto) {
+  async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
     return new UserDto(await this.userService.createUser(dto));
   }
 
@@ -44,7 +43,7 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ) {
+  ): Promise<void> {
     await this.userService.deleteUser(id);
   }
 
@@ -53,7 +52,7 @@ export class UserController {
   async updateUserPassword(
     @Body() dto: UpdatePasswordDto,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ) {
-    return new UserDto(await this.userService.updateUser(id, dto));
+  ): Promise<UserDto> {
+    return await this.userService.updateUser(id, dto);
   }
 }
