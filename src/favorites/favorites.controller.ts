@@ -16,40 +16,46 @@ export class FavoritesController {
   constructor(private favsService: FavoritesService) {}
 
   @Get()
-  getFavs(): FavoritesResponseDto {
-    return this.favsService.getFavs();
+  async getFavs(): Promise<FavoritesResponseDto> {
+    return await this.favsService.getFavs();
   }
 
   @Post('/track/:id')
-  addTrack(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.addTrack(id);
+  async addTrack(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.favsService.addTrack(id);
   }
 
   @Delete('/track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.deleteTrack(id);
+  async deleteTrack(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<void> {
+    await this.favsService.deleteTrack(id);
   }
 
   @Post('/artist/:id')
-  addArtist(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.addArtist(id);
+  async addArtist(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.favsService.addArtist(id);
   }
 
   @Delete('/artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.deleteArtist(id);
+  async deleteArtist(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<void> {
+    await this.favsService.deleteArtist(id);
   }
 
   @Post('/album/:id')
-  addAlbum(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.addAlbum(id);
+  async addAlbum(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.favsService.addAlbum(id);
   }
 
   @Delete('/album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.favsService.deleteAlbum(id);
+  async deleteAlbum(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<void> {
+    await this.favsService.deleteAlbum(id);
   }
 }

@@ -3,81 +3,151 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { MydbService } from 'src/mydb/mydb.service';
-import { FavRecords, FavoritesResponseDto } from './dto';
+import { FavoritesResponseDto } from './dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaQueryError } from 'src/prisma/errorcodes';
 
 @Injectable()
 export class FavoritesService {
   private MSG_NOTFOUND = 'ID does not exist in';
-  constructor(private mydb: MydbService) {}
+  private userIdForTest: string;
+  constructor(private prisma: PrismaService) {
+    // temp for part2 Favorites Tests ---
+    const data = {
+      login: 'User for Favorites tests',
+      password: 'password',
+    };
+    this.prisma.user
+      .findFirst({
+        where: {
+          login: data.login,
+        },
+      })
+      .then(async (user) => {
+        if (!user) {
+          user = await this.prisma.user.create({ data });
+        }
+        this.userIdForTest = user.id;
+        console.log({ userIdForTest: this.userIdForTest, user });
+      });
+    // ----
+  }
 
-  getFavs(): FavoritesResponseDto {
+  async getFavs(
+    userId: string = this.userIdForTest,
+  ): Promise<FavoritesResponseDto> {
     const result: FavoritesResponseDto = {
       albums: [],
       artists: [],
       tracks: [],
     };
 
-    const artists = this.mydb.favs.list(FavRecords.artists);
-    artists.forEach((id) => {
-      result.artists.push(this.mydb.artist.getById(id));
+    const answer = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        FavsArtists: { select: { artist: true } },
+        FavsAlbums: { select: { album: true } },
+        FavsTracks: { select: { track: true } },
+      },
     });
 
-    const albums = this.mydb.favs.list(FavRecords.albums);
-    albums.forEach((id) => {
-      result.albums.push(this.mydb.album.getById(id));
-    });
-
-    const tracks = this.mydb.favs.list(FavRecords.tracks);
-    tracks.forEach((id) => {
-      result.tracks.push(this.mydb.track.getById(id));
-    });
-
+    result.artists = answer.FavsArtists.map((item) => item.artist);
+    result.albums = answer.FavsAlbums.map((item) => item.album);
+    result.tracks = answer.FavsTracks.map((item) => item.track);
     return result;
   }
 
-  addArtist(id: string): void {
-    const result = this.mydb.artist.getById(id);
-    if (!result) {
-      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} in Artists`);
+  async addArtist(
+    artistId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    const artist = await this.prisma.artist.findUnique({
+      where: { id: artistId },
+    });
+    if (!artist) {
+      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} Artists`);
     }
-    this.mydb.favs.add(FavRecords.artists, id);
+    await this.prisma.favsArtists.create({ data: { userId, artistId } });
   }
 
-  deleteArtist(id: string): void {
-    const result = this.mydb.favs.delete(FavRecords.artists, id);
-    if (!result) {
-      throw new NotFoundException(`${this.MSG_NOTFOUND} in Artists Favs`);
+  async deleteArtist(
+    artistId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    try {
+      await this.prisma.favsArtists.delete({
+        where: { userId_artistId: { userId, artistId } },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(`Artist ${this.MSG_NOTFOUND} Favorites`);
+        }
+      }
+      throw error;
     }
   }
 
-  addTrack(id: string): void {
-    const result = this.mydb.track.getById(id);
-    if (!result) {
-      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} in Tracks`);
+  async addAlbum(
+    albumId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    const album = await this.prisma.album.findUnique({
+      where: { id: albumId },
+    });
+    if (!album) {
+      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} Albums`);
     }
-    this.mydb.favs.add(FavRecords.tracks, id);
+    await this.prisma.favsAlbums.create({ data: { userId, albumId } });
   }
 
-  deleteTrack(id: string): void {
-    const result = this.mydb.favs.delete(FavRecords.tracks, id);
-    if (!result) {
-      throw new NotFoundException(`${this.MSG_NOTFOUND} in Tracks Favs`);
+  async deleteAlbum(
+    albumId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    try {
+      await this.prisma.favsAlbums.delete({
+        where: { userId_albumId: { userId, albumId } },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(`Album ${this.MSG_NOTFOUND} Favorites`);
+        }
+      }
+      throw error;
     }
   }
 
-  addAlbum(id: string): void {
-    const result = this.mydb.album.getById(id);
-    if (!result) {
-      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} in Albums`);
+  async addTrack(
+    trackId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    const track = await this.prisma.track.findUnique({
+      where: { id: trackId },
+    });
+    if (!track) {
+      throw new UnprocessableEntityException(`${this.MSG_NOTFOUND} Tracks`);
     }
-    this.mydb.favs.add(FavRecords.albums, id);
+    await this.prisma.favsTracks.create({ data: { userId, trackId } });
   }
 
-  deleteAlbum(id: string): void {
-    const result = this.mydb.favs.delete(FavRecords.albums, id);
-    if (!result) {
-      throw new NotFoundException(`${this.MSG_NOTFOUND} in Albums Favs`);
+  async deleteTrack(
+    trackId: string,
+    userId: string = this.userIdForTest,
+  ): Promise<void> {
+    try {
+      await this.prisma.favsTracks.delete({
+        where: { userId_trackId: { userId, trackId } },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(`Track ${this.MSG_NOTFOUND} Favorites`);
+        }
+      }
+      throw error;
     }
   }
 }
