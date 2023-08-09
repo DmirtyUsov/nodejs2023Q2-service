@@ -29,7 +29,6 @@ export class FavoritesService {
           user = await this.prisma.user.create({ data });
         }
         this.userIdForTest = user.id;
-        console.log({ userIdForTest: this.userIdForTest, user });
       });
     // ----
   }
