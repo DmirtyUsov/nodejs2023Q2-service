@@ -4,7 +4,6 @@ COPY ["package.json", "package-lock.json", "./"]
 RUN npm ci
 COPY . .
 # Generate Prisma client
-RUN npx prisma generate
-# Push changes to DB
-#RUN npx prisma db push
-CMD [ "npm", "run", "start:dev"]
+RUN chmod u+x ./docker-startservice.sh && npx prisma generate
+#CMD [ "npm", "run", "start:dev"]
+CMD ["ash", "./docker-startservice.sh"]
