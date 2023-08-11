@@ -15,7 +15,7 @@ services:
   hl-backend:
     image: hlservice
     ports:
-      - 4000:${PORT}
+      - ${PORT}:${PORT}
       - 5555:5555
     volumes:
       - ./:/app
