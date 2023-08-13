@@ -11,6 +11,7 @@ services:
     container_name: ${DB_CONTAINER_NAME}
     networks:
       - networkHl
+    restart: always
 
   hl-backend:
     image: hlservice
@@ -23,6 +24,7 @@ services:
       - hl-database
     networks:
       - networkHl
+    restart: always
 
 networks:
   networkHl:
