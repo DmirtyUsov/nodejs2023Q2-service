@@ -123,7 +123,7 @@ paths:
         - Login
       security: []
       summary: Login
-      description: Logins a user and returns a JWT-token
+      description: To Be Done Logins a user and returns a JWT-token
       requestBody:
         required: true
         content:
@@ -160,7 +160,7 @@ paths:
         - Signup
       security: [ ]
       summary: Signup
-      description: Signup a user
+      description: To Be Done Signup a user
       requestBody:
         required: true
         content:

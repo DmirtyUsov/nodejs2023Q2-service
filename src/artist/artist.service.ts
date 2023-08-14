@@ -1,49 +1,70 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MydbService } from 'src/mydb/mydb.service';
 import { ArtistDto, CreateArtistDto } from './dto';
-import * as uuid from 'uuid';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaQueryError } from 'src/prisma/errorcodes';
 
 @Injectable()
 export class ArtistService {
-  constructor(private mydb: MydbService) {}
+  private MSG_NOTFOUND = 'Artist does not exist';
+  constructor(private prisma: PrismaService) {}
 
-  getAllArtists() {
-    return this.mydb.artist.list();
+  async getAllArtists(): Promise<ArtistDto[]> {
+    return await this.prisma.artist.findMany();
   }
-  getSingleArtistById(id: string) {
-    const result = this.mydb.artist.getById(id);
+
+  async getSingleArtistById(id: string): Promise<ArtistDto> {
+    const result = await this.prisma.artist.findUnique({
+      where: { id: id },
+    });
     if (!result) {
-      throw new NotFoundException('User doesn not exist');
+      throw new NotFoundException(this.MSG_NOTFOUND);
     }
     return result;
   }
 
-  createArtist(dto: CreateArtistDto) {
-    const newArtist: ArtistDto = {
-      id: uuid.v4(),
-      name: dto.name,
-      grammy: dto.grammy,
-    };
-    return this.mydb.artist.create(newArtist);
+  async createArtist(dto: CreateArtistDto): Promise<ArtistDto> {
+    return await this.prisma.artist.create({
+      data: {
+        name: dto.name,
+        grammy: dto.grammy,
+      },
+    });
   }
 
-  updateArtistInfo(id: string, dto: CreateArtistDto): ArtistDto {
-    // find artist
-    const result = this.mydb.artist.getById(id);
-    if (!result) {
-      throw new NotFoundException('User does not exist');
+  async updateArtistInfo(id: string, dto: CreateArtistDto): Promise<ArtistDto> {
+    try {
+      const result = await this.prisma.artist.update({
+        where: { id: id },
+        data: {
+          name: dto.name,
+          grammy: dto.grammy,
+        },
+      });
+      return result;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(this.MSG_NOTFOUND);
+        }
+      }
+      throw error;
     }
-    result.name = dto.name;
-    result.grammy = dto.grammy;
-    return this.mydb.artist.update(id, result);
   }
 
-  deleteArtist(id: string) {
-    const result = this.mydb.artist.delete(id);
-    if (!result) {
-      throw new NotFoundException('User doesn not exist');
+  async deleteArtist(id: string): Promise<ArtistDto> {
+    try {
+      const result = await this.prisma.artist.delete({
+        where: { id: id },
+      });
+      return result;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(this.MSG_NOTFOUND);
+        }
+      }
+      throw error;
     }
-    this.mydb.cleanArtist(id);
-    return result;
   }
 }

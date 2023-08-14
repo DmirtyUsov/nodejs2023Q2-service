@@ -3,49 +3,51 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { MydbService } from 'src/mydb/mydb.service';
 import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
-import * as uuid from 'uuid';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaQueryError } from 'src/prisma/errorcodes';
 
 @Injectable()
 export class UserService {
   private MSG_NOTFOUND = 'User does not exist';
-  constructor(private mydb: MydbService) {}
+  constructor(private prisma: PrismaService) {}
 
-  getAllUsers() {
-    return this.mydb.user.list();
+  async getAllUsers(): Promise<UserDto[]> {
+    const users = await this.prisma.extended.user.findMany();
+    return users.map((item) => new UserDto(item)); // For @Exclude correct working
   }
 
-  getSingleUserById(id: string) {
-    const result = this.mydb.user.getById(id);
+  async getSingleUserById(id: string): Promise<UserDto> {
+    const result = await this.prisma.extended.user.findUnique({
+      where: { id: id },
+    });
+
     if (!result) {
       throw new NotFoundException(this.MSG_NOTFOUND);
     }
-    return result;
+    return new UserDto(result);
   }
 
-  createUser(dto: CreateUserDto) {
-    const newUser = new UserDto();
-    newUser.id = uuid.v4();
-    newUser.login = dto.login;
-    newUser.version = 1;
-    newUser.createdAt = Date.now();
-    newUser.updatedAt = Date.now();
-    newUser.password = dto.password;
-    // generate the password hash
-
-    // save user to db
-    // return saved user
-    const result = this.mydb.user.create(newUser);
+  async createUser(dto: CreateUserDto): Promise<UserDto> {
+    // TODO generate the password hash
+    const result = await this.prisma.extended.user.create({
+      data: {
+        login: dto.login,
+        password: dto.password,
+      },
+    });
     if (!result) {
       throw new ForbiddenException('User exists');
     } else {
-      return result;
+      return new UserDto(result);
     }
   }
 
-  updateUser(id: string, dto: UpdatePasswordDto): UserDto {
-    const result = this.mydb.user.getById(id);
+  async updateUser(id: string, dto: UpdatePasswordDto): Promise<UserDto> {
+    let result = await this.prisma.extended.user.findUnique({
+      where: { id: id },
+    });
     if (!result) {
       throw new NotFoundException(this.MSG_NOTFOUND);
     } else {
@@ -53,21 +55,31 @@ export class UserService {
       if (dto.oldPassword !== result.password) {
         throw new ForbiddenException('oldPassword is wrong');
       }
-      // update password
-      result.password = dto.newPassword;
-      result.updatedAt = Date.now();
-      result.version += 1;
-      // const result = this.mydb.user.update(dto.id, dto);
+
+      result = await this.prisma.extended.user.update({
+        where: { id: id },
+        data: {
+          password: dto.newPassword,
+          version: { increment: 1 },
+        },
+      });
     }
-    return result;
+    return new UserDto(result);
   }
 
-  deleteUser(id: string): UserDto {
-    const result = this.mydb.user.delete(id);
-    if (!result) {
-      throw new NotFoundException(this.MSG_NOTFOUND);
-    } else {
-      return result;
+  async deleteUser(id: string): Promise<UserDto> {
+    try {
+      const result = await this.prisma.extended.user.delete({
+        where: { id: id },
+      });
+      return new UserDto(result);
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code == PrismaQueryError.RecordsNotFound) {
+          throw new NotFoundException(this.MSG_NOTFOUND);
+        }
+      }
+      throw error;
     }
   }
 }

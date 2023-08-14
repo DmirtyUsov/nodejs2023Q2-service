@@ -18,31 +18,35 @@ export class TrackController {
   constructor(private trackService: TrackService) {}
 
   @Get()
-  getAllTracks(): TrackDto[] {
-    return this.trackService.getAllTracks();
+  async getAllTracks(): Promise<TrackDto[]> {
+    return await this.trackService.getAllTracks();
   }
 
   @Get(':id')
-  getSingleTrackById(@Param('id', new ParseUUIDPipe()) id: string): TrackDto {
-    return this.trackService.getSingleTrackById(id);
+  async getSingleTrackById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<TrackDto> {
+    return await this.trackService.getSingleTrackById(id);
   }
 
   @Post()
-  createNewTrack(@Body() dto: CreateTrackDto): TrackDto {
-    return this.trackService.createTrack(dto);
+  async createNewTrack(@Body() dto: CreateTrackDto): Promise<TrackDto> {
+    return await this.trackService.createTrack(dto);
   }
 
   @Put(':id')
-  updateTrackInfo(
+  async updateTrackInfo(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: CreateTrackDto,
-  ): TrackDto {
-    return this.trackService.updateTrackInfo(id, dto);
+  ): Promise<TrackDto> {
+    return await this.trackService.updateTrackInfo(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string): void {
-    this.trackService.deleteTrack(id);
+  async deleteTrack(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<void> {
+    await this.trackService.deleteTrack(id);
   }
 }
