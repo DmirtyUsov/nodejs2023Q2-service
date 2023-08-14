@@ -28,7 +28,7 @@ mv .env.example .env
 ```
 docker compose up -d
 ```
-First time will download two images from [GitHub](https://hub.docker.com/repositories/dimausov) (115 and 90 MB)   
+First time will download two images from [DockerHub](https://hub.docker.com/repositories/dimausov) (115 and 90 MB)   
 **Wait 15 seconds**  
 
 After starting the app on port (4000 as default) you can open
