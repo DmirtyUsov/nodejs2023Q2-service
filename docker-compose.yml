@@ -1,7 +1,7 @@
 name: hlservice-part2
 services:
   hl-database:
-    image: hldatabase
+    image: dimausov/hldatabase
     ports:
       - 5432:${DB_CONTAINER_PORT}
     environment:
@@ -17,7 +17,7 @@ services:
     restart: always
 
   hl-backend:
-    image: hlservice
+    image: dimausov/hlservice
     ports:
       - ${PORT}:${PORT}
       - 5555:5555
