@@ -4,12 +4,12 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
-
+- Docker - [Install Docker Engine](https://docs.docker.com/engine/install/)
 ## Download
 
 ```
 git clone git@github.com:DmirtyUsov/nodejs2023Q2-service.git
-git checkout develop
+git checkout part2
 ```
 
 ## Install NPM modules
@@ -26,16 +26,16 @@ mv .env.example .env
 ## Run application
 
 ```
-npm start
+docker compose up -d
 ```
+First time will download two images from [GitHub](https://hub.docker.com/repositories/dimausov) (115 and 90 MB)   
+**Wait 15 seconds**  
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
-
-After application running open new terminal and enter:
 
 To run all tests without authorization
 
@@ -47,6 +47,14 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
+```
+## Stop application
+```
+docker compose stop
+```
+## Scan for vulnerabilities
+```
+npm run scan
 ```
 ## For future Parts
 To run all test with authorization
