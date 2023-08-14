@@ -1,1 +1,1 @@
-Folder mounts for database logs
+Planned as folder mounts for database logs. Got permissions errors
