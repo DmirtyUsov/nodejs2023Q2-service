@@ -7,7 +7,7 @@ import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LoggingModule } from './logging/logging.module';
-//import { LoggerMiddleware } from './utils/logger.middleware';
+import { LoggerMiddleware } from './utils';
 
 @Module({
   imports: [
@@ -21,4 +21,8 @@ import { LoggingModule } from './logging/logging.module';
     LoggingModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
