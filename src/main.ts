@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { OpenApiData } from './config';
+import { OpenApiData } from './utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
