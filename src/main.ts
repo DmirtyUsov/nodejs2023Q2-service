@@ -4,9 +4,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { OpenApiData } from './utils';
+import { LoggingService } from './logging/logging.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useLogger(new LoggingService());
+
   app.useGlobalPipes(new ValidationPipe());
 
   SwaggerModule.setup('doc', app, OpenApiData as OpenAPIObject);
