@@ -4,14 +4,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { OpenApiData } from './utils';
-import { LoggingService } from './logging/logging.service';
+import { LoggingLevel, LoggingService } from './logging/logging.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
-
-  app.useLogger(new LoggingService());
+  const loggingLevel = app.get(ConfigService).get('LOG_LEVEL');
+  app.useLogger(new LoggingService(LoggingLevel[`${loggingLevel}`]));
 
   app.useGlobalPipes(new ValidationPipe());
 

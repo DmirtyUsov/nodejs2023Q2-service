@@ -4,7 +4,7 @@ import { LoggingService } from 'src/logging/logging.service';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new LoggingService('HTTP');
+  constructor(private logger: LoggingService) {}
 
   use(request: Request, response: Response, next: NextFunction): void {
     const { ip, method, originalUrl } = request;
@@ -21,8 +21,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const bodyMsg = body.length > 2 ? `\n      body:${body}` : '';
 
       const message = `${method} ${originalUrl} ${statusCode} ${contentLenght} - ${userAgent} ${ip} ${paramMsg} ${bodyMsg}`;
-
-      this.logger.log(message);
+      this.logger.log(message, 'HTTP');
     });
 
     next();
