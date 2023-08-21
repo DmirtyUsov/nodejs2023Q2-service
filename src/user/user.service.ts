@@ -34,6 +34,13 @@ export class UserService {
     return new UserDto(result);
   }
 
+  async getUserByLogin(login: string): Promise<UserDto> {
+    const result = await this.prisma.extended.user.findFirst({
+      where: { login: login },
+    });
+    return result;
+  }
+
   async createUser(dto: CredentialUserDto): Promise<UserDto> {
     const salt = await genSalt(this.saltRounds);
     const passwordHash = await hash(dto.password, salt);
