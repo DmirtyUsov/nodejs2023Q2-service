@@ -11,7 +11,11 @@ async function bootstrap() {
     bufferLogs: true,
   });
   const loggingLevel = app.get(ConfigService).get('LOG_LEVEL');
-  app.useLogger(new LoggingService(LoggingLevel[`${loggingLevel}`]));
+  const loggingFileSize = app.get(ConfigService).get('LOG_FILE_SIZE_KB');
+  const logging = app.get(LoggingService);
+  app.useLogger(logging);
+  logging.setLoggingLevel(LoggingLevel[`${loggingLevel}`]);
+  logging.setLoggingFileSizeKb(loggingFileSize);
 
   app.useGlobalPipes(new ValidationPipe());
 
