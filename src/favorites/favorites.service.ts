@@ -11,31 +11,10 @@ import { PrismaQueryError } from 'src/prisma/errorcodes';
 @Injectable()
 export class FavoritesService {
   private MSG_NOTFOUND = 'ID does not exist in';
-  private userIdForTest: string;
-  constructor(private prisma: PrismaService) {
-    // temp for part2 Favorites Tests ---
-    const data = {
-      login: 'User for Favorites tests',
-      password: 'password',
-    };
-    this.prisma.user
-      .findFirst({
-        where: {
-          login: data.login,
-        },
-      })
-      .then(async (user) => {
-        if (!user) {
-          user = await this.prisma.user.create({ data });
-        }
-        this.userIdForTest = user.id;
-      });
-    // ----
-  }
 
-  async getFavs(
-    userId: string = this.userIdForTest,
-  ): Promise<FavoritesResponseDto> {
+  constructor(private prisma: PrismaService) {}
+
+  async getFavs(userId: string): Promise<FavoritesResponseDto> {
     const result: FavoritesResponseDto = {
       albums: [],
       artists: [],
@@ -57,10 +36,7 @@ export class FavoritesService {
     return result;
   }
 
-  async addArtist(
-    artistId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async addArtist(artistId: string, userId: string): Promise<void> {
     const artist = await this.prisma.artist.findUnique({
       where: { id: artistId },
     });
@@ -70,10 +46,7 @@ export class FavoritesService {
     await this.prisma.favsArtists.create({ data: { userId, artistId } });
   }
 
-  async deleteArtist(
-    artistId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async deleteArtist(artistId: string, userId: string): Promise<void> {
     try {
       await this.prisma.favsArtists.delete({
         where: { userId_artistId: { userId, artistId } },
@@ -88,10 +61,7 @@ export class FavoritesService {
     }
   }
 
-  async addAlbum(
-    albumId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async addAlbum(albumId: string, userId: string): Promise<void> {
     const album = await this.prisma.album.findUnique({
       where: { id: albumId },
     });
@@ -101,10 +71,7 @@ export class FavoritesService {
     await this.prisma.favsAlbums.create({ data: { userId, albumId } });
   }
 
-  async deleteAlbum(
-    albumId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async deleteAlbum(albumId: string, userId: string): Promise<void> {
     try {
       await this.prisma.favsAlbums.delete({
         where: { userId_albumId: { userId, albumId } },
@@ -119,10 +86,7 @@ export class FavoritesService {
     }
   }
 
-  async addTrack(
-    trackId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async addTrack(trackId: string, userId: string): Promise<void> {
     const track = await this.prisma.track.findUnique({
       where: { id: trackId },
     });
@@ -132,10 +96,7 @@ export class FavoritesService {
     await this.prisma.favsTracks.create({ data: { userId, trackId } });
   }
 
-  async deleteTrack(
-    trackId: string,
-    userId: string = this.userIdForTest,
-  ): Promise<void> {
+  async deleteTrack(trackId: string, userId: string): Promise<void> {
     try {
       await this.prisma.favsTracks.delete({
         where: { userId_trackId: { userId, trackId } },
