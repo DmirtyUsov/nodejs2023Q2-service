@@ -7,11 +7,16 @@ import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaQueryError } from 'src/prisma/errorcodes';
+import { compare, genSalt, hash } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   private MSG_NOTFOUND = 'User does not exist';
-  constructor(private prisma: PrismaService) {}
+  private saltRounds: number;
+  constructor(private prisma: PrismaService, private config: ConfigService) {
+    this.saltRounds = +config.get('CRYPT_SALT');
+  }
 
   async getAllUsers(): Promise<UserDto[]> {
     const users = await this.prisma.extended.user.findMany();
@@ -30,11 +35,12 @@ export class UserService {
   }
 
   async createUser(dto: CreateUserDto): Promise<UserDto> {
-    // TODO generate the password hash
+    const salt = await genSalt(this.saltRounds);
+    const passwordHash = await hash(dto.password, salt);
     const result = await this.prisma.extended.user.create({
       data: {
         login: dto.login,
-        password: dto.password,
+        password: passwordHash,
       },
     });
     if (!result) {
@@ -52,14 +58,17 @@ export class UserService {
       throw new NotFoundException(this.MSG_NOTFOUND);
     } else {
       // check password
-      if (dto.oldPassword !== result.password) {
+      const isHashesSame = await compare(dto.oldPassword, result.password);
+      if (!isHashesSame) {
         throw new ForbiddenException('oldPassword is wrong');
       }
+      const salt = await genSalt(this.saltRounds);
+      const passwordHash = await hash(dto.newPassword, salt);
 
       result = await this.prisma.extended.user.update({
         where: { id: id },
         data: {
-          password: dto.newPassword,
+          password: passwordHash,
           version: { increment: 1 },
         },
       });
