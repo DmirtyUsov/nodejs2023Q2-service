@@ -7,10 +7,22 @@ import { CredentialUserDto } from 'src/user/dto';
 import { AuthDto } from './dto';
 import { UserService } from 'src/user/user.service';
 import { compare } from 'bcrypt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService) {}
+  private jwtOptions: JwtSignOptions;
+  constructor(
+    private userService: UserService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {
+    this.jwtOptions = {
+      secret: this.config.get('JWT_SECRET_KEY'),
+      expiresIn: this.config.get('TOKEN_EXPIRE_TIME'),
+    };
+  }
 
   async signup(dto: CredentialUserDto): Promise<void> {
     const loginInDb = await this.userService.getUserByLogin(dto.login);
@@ -29,10 +41,19 @@ export class AuthService {
     if (!isHashesSame) {
       throw new ForbiddenException('Wrong password');
     }
-    return { token: result.id };
+    return await this.signToken(result.id, result.login);
   }
 
   async refresh() {
     return 'refresh';
+  }
+
+  async signToken(userId: string, userLogin: string): Promise<AuthDto> {
+    const payload = {
+      sub: userId,
+      userLogin,
+    };
+    const token = await this.jwt.signAsync(payload, this.jwtOptions);
+    return { token };
   }
 }
