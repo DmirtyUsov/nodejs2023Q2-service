@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
+import { CredentialUserDto, UpdatePasswordDto, UserDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaQueryError } from 'src/prisma/errorcodes';
@@ -34,7 +34,7 @@ export class UserService {
     return new UserDto(result);
   }
 
-  async createUser(dto: CreateUserDto): Promise<UserDto> {
+  async createUser(dto: CredentialUserDto): Promise<UserDto> {
     const salt = await genSalt(this.saltRounds);
     const passwordHash = await hash(dto.password, salt);
     const result = await this.prisma.extended.user.create({
