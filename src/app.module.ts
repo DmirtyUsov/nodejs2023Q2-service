@@ -8,6 +8,8 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LoggingModule } from './logging/logging.module';
 import { LoggerMiddleware } from './utils';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './utils/http-exception.filter';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { LoggerMiddleware } from './utils';
     PrismaModule,
     LoggingModule,
   ],
+  providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
