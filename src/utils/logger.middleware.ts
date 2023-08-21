@@ -1,5 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { LoggingService } from 'src/logging/logging.service';
 
 @Injectable()
@@ -21,7 +22,11 @@ export class LoggerMiddleware implements NestMiddleware {
       const bodyMsg = body.length > 2 ? `\n      body:${body}` : '';
 
       const message = `${method} ${originalUrl} ${statusCode} ${contentLenght} - ${userAgent} ${ip} ${paramMsg} ${bodyMsg}`;
-      this.logger.log(message, 'HTTP');
+      if (statusCode >= StatusCodes.BAD_REQUEST) {
+        this.logger.error(message, 'HTTP');
+      } else {
+        this.logger.log(message, 'HTTP');
+      }
     });
 
     next();

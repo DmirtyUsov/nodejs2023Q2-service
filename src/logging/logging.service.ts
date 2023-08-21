@@ -20,7 +20,7 @@ const FILE_TYPE = 'log';
 
 @Injectable()
 export class LoggingService extends ConsoleLogger {
-  private activeStream;
+  private activeStream: fs.WriteStream;
   private activeFileName = '';
   private activeFileSize = 0;
   private activeFileSizeMax = 0;
@@ -34,36 +34,41 @@ export class LoggingService extends ConsoleLogger {
 
   log(message: string, context?: string) {
     super.log(message, context);
-    if (this.isLevelEnabled('log')) {
-      this.writeMessage(message, context);
+    const level = 'log';
+    if (this.isLevelEnabled(level)) {
+      this.writeMessage(message, level, context);
     }
   }
 
   error(message: string, context?: string) {
     super.error(message, context);
-    if (this.isLevelEnabled('error')) {
-      this.writeMessage(message, context);
+    const level = 'error';
+    if (this.isLevelEnabled(level)) {
+      this.writeMessage(message, level, context);
     }
   }
 
   warn(message: string, context?: string) {
     super.warn(message, context);
-    if (this.isLevelEnabled('warn')) {
-      this.writeMessage(message, context);
+    const level = 'warn';
+    if (this.isLevelEnabled(level)) {
+      this.writeMessage(message, level, context);
     }
   }
 
   debug(message: string, context?: string) {
     super.debug(message, context);
-    if (this.isLevelEnabled('debug')) {
-      this.writeMessage(message, context);
+    const level = 'debug';
+    if (this.isLevelEnabled(level)) {
+      this.writeMessage(message, level, context);
     }
   }
 
   verbose(message: string, context?: string) {
     super.verbose(message, context);
-    if (this.isLevelEnabled('verbose')) {
-      this.writeMessage(message, context);
+    const level = 'verbose';
+    if (this.isLevelEnabled(level)) {
+      this.writeMessage(message, level, context);
     }
   }
 
@@ -75,8 +80,12 @@ export class LoggingService extends ConsoleLogger {
     this.activeFileSizeMax = (size < 1 ? 1 : size) * 1024;
   }
 
-  private writeMessage(message: string, context?: string): void {
-    const messageToFile = `${new Date().toISOString()} [${context}] ${message} \n`;
+  private writeMessage(
+    message: string,
+    level: LogLevel,
+    context?: string,
+  ): void {
+    const messageToFile = `${new Date().toISOString()} ${level.toUpperCase()} [${context}] ${message} \n`;
     const messageSize = Buffer.byteLength(messageToFile, 'utf-8');
     this.activeFileSize += messageSize;
     if (this.activeFileSize > this.activeFileSizeMax) {
