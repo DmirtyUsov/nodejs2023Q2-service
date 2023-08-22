@@ -9,7 +9,7 @@
 
 ```
 git clone git@github.com:DmirtyUsov/nodejs2023Q2-service.git
-git checkout part2
+git checkout part3
 ```
 
 ## Install NPM modules
@@ -35,28 +35,11 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+**Log files** you can find in ```./part3-logs```
+
+
 ## Testing
 
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-## Stop application
-```
-docker compose stop
-```
-## Scan for vulnerabilities
-```
-npm run scan
-```
-## For future Parts
 To run all test with authorization
 
 ```
@@ -67,6 +50,14 @@ To run only specific test suite with authorization
 
 ```
 npm run test:auth -- <path to suite>
+```
+## Stop application
+```
+docker compose stop
+```
+## Scan for vulnerabilities
+```
+npm run scan
 ```
 
 ### Auto-fix and format

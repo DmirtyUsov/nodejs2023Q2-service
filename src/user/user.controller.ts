@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdatePasswordDto, UserDto } from './dto';
+import { CredentialUserDto, UpdatePasswordDto, UserDto } from './dto';
 
 @Controller('user')
 export class UserController {
@@ -35,7 +35,7 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
+  async createUser(@Body() dto: CredentialUserDto): Promise<UserDto> {
     return new UserDto(await this.userService.createUser(dto));
   }
 
