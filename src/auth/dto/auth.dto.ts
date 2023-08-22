@@ -1,3 +1,3 @@
 export class AuthDto {
-  token: string;
+  accessToken: string;
 }

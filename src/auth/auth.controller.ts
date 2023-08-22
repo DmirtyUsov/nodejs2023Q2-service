@@ -1,6 +1,6 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CredentialUserDto } from 'src/user/dto';
+import { CredentialUserDto, UserDto } from 'src/user/dto';
 import { AuthDto } from './dto';
 import { StatusCodes } from 'http-status-codes';
 import { Public } from './decorators';
@@ -16,10 +16,11 @@ export class AuthController {
   }
 
   @Public()
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(StatusCodes.CREATED)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('signup')
-  async signup(@Body() dto: CredentialUserDto): Promise<void> {
-    await this.authService.signup(dto);
+  async signup(@Body() dto: CredentialUserDto): Promise<UserDto> {
+    return await this.authService.signup(dto);
   }
   @Post('refresh')
   async refresh() {

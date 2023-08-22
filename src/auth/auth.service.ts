@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { CredentialUserDto } from 'src/user/dto';
+import { CredentialUserDto, UserDto } from 'src/user/dto';
 import { AuthDto } from './dto';
 import { UserService } from 'src/user/user.service';
 import { compare } from 'bcrypt';
@@ -24,12 +24,12 @@ export class AuthService {
     };
   }
 
-  async signup(dto: CredentialUserDto): Promise<void> {
+  async signup(dto: CredentialUserDto): Promise<UserDto> {
     const loginInDb = await this.userService.getUserByLogin(dto.login);
     if (loginInDb) {
       throw new ConflictException('Login exists');
     }
-    await this.userService.createUser(dto);
+    return new UserDto(await this.userService.createUser(dto));
   }
 
   async login(dto: CredentialUserDto): Promise<AuthDto> {
@@ -53,7 +53,7 @@ export class AuthService {
       sub: userId,
       userLogin,
     };
-    const token = await this.jwt.signAsync(payload, this.jwtOptions);
-    return { token };
+    const accessToken = await this.jwt.signAsync(payload, this.jwtOptions);
+    return { accessToken };
   }
 }
